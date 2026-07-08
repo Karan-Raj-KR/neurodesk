@@ -24,12 +24,14 @@ export default function MembersPage() {
   const [showAddForm, setShowAddForm] = useState(false);
 
   const fetchMembers = async () => {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
     try {
-      const res = await fetch("http://localhost:8000/members");
+      const res = await fetch(`${API_URL}/members`);
       const data = await res.json();
-      setMembers(data);
+      setMembers(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error(err);
+      setMembers([]);
     } finally {
       setLoading(false);
     }
@@ -40,34 +42,34 @@ export default function MembersPage() {
   }, []);
 
   return (
-    <div className="min-h-screen p-4 md:p-10 max-w-[1440px] mx-auto flex flex-col">
-      <header className="mb-12 flex justify-between items-center">
-        <Link href="/" className="text-text-secondary hover:text-text-primary transition-colors flex items-center gap-2 text-sm font-medium">
-          <ArrowLeft className="w-4 h-4" /> Back to Command Center
-        </Link>
-        <div className="flex items-center gap-2 text-sm font-semibold text-brand-primary">
-          NeuroDesk 
-          <span className="flex h-2 w-2 relative">
-             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-success opacity-75"></span>
-             <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-success"></span>
-          </span>
-          <span className="text-brand-success uppercase tracking-widest text-[10px]">Live</span>
-        </div>
-      </header>
-
-      <main className="flex-1">
-        <div className="flex justify-between items-end mb-8">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight mb-2">Members Directory</h1>
-            <p className="text-sm text-text-secondary">Manage members, attendance, and notes across all locations.</p>
+    <div className="min-h-screen px-6 py-8 md:px-12 md:py-16 max-w-7xl mx-auto flex flex-col">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-surface-border pb-8 mb-12">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-2 text-sm font-semibold text-brand-primary uppercase tracking-widest">
+            NeuroDesk 
+            <span className="flex h-2 w-2 relative">
+               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-success opacity-75"></span>
+               <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-success"></span>
+            </span>
+            <span className="text-brand-success text-[10px]">Live System</span>
           </div>
+          <h1 className="text-3xl font-bold tracking-tight text-text-primary">Members Directory</h1>
+          <p className="text-sm text-text-secondary">Manage members, attendance, and retention actions.</p>
+        </div>
+        <nav className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 w-full md:w-auto justify-start md:justify-end">
+          <Link href="/" className="text-text-secondary hover:text-brand-primary transition-colors flex items-center gap-2 text-sm font-medium">
+            <ArrowLeft className="w-4 h-4" /> Command Center
+          </Link>
           <button 
             onClick={() => setShowAddForm(!showAddForm)}
             className="btn-primary flex items-center gap-2"
           >
             {showAddForm ? "Cancel" : <><Plus className="w-4 h-4" /> Add Member</>}
           </button>
-        </div>
+        </nav>
+      </header>
+
+      <main className="flex-1">
 
         <AnimatePresence>
           {showAddForm && (
@@ -110,8 +112,9 @@ function AddMemberForm({ onAdded }: { onAdded: () => void }) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
     try {
-      await fetch("http://localhost:8000/members", {
+      await fetch(`${API_URL}/members`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -185,8 +188,9 @@ function MemberRow({ member, onUpdate }: { member: Member, onUpdate: () => void 
 
   const handleSave = async () => {
     setLoading(true);
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
     try {
-      await fetch(`http://localhost:8000/members/${member.id}`, {
+      await fetch(`${API_URL}/members/${member.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -17,9 +17,10 @@ export default function DailyInputPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:8000/daily-input", {
+      const res = await fetch(`${API_URL}/daily-input`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -42,22 +43,27 @@ export default function DailyInputPage() {
   };
 
   return (
-    <div className="min-h-screen p-4 md:p-10 max-w-[1440px] mx-auto flex flex-col">
-      <header className="mb-12 flex justify-between items-center">
-        <Link href="/" className="text-text-secondary hover:text-text-primary transition-colors flex items-center gap-2 text-sm font-medium">
-          <ArrowLeft className="w-4 h-4" /> Command Center
-        </Link>
-        <Link href="/members" className="text-text-secondary hover:text-text-primary transition-colors flex items-center gap-2 text-sm font-medium">
-          Members Directory
-        </Link>
-        <div className="flex items-center gap-2 text-sm font-semibold text-brand-primary">
-          NeuroDesk 
-          <span className="flex h-2 w-2 relative">
-             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-success opacity-75"></span>
-             <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-success"></span>
-          </span>
-          <span className="text-brand-success uppercase tracking-widest text-[10px]">Live</span>
+    <div className="min-h-screen px-6 py-8 md:px-12 md:py-16 max-w-7xl mx-auto flex flex-col">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-surface-border pb-8 mb-12">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-2 text-sm font-semibold text-brand-primary uppercase tracking-widest">
+            NeuroDesk 
+            <span className="flex h-2 w-2 relative">
+               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-success opacity-75"></span>
+               <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-success"></span>
+            </span>
+            <span className="text-brand-success text-[10px]">Live System</span>
+          </div>
+          <h1 className="text-3xl font-bold tracking-tight text-text-primary">Daily Input</h1>
         </div>
+        <nav className="flex items-center gap-6 w-full md:w-auto justify-start md:justify-end">
+          <Link href="/" className="text-text-secondary hover:text-brand-primary transition-colors flex items-center gap-2 text-sm font-medium">
+            <ArrowLeft className="w-4 h-4" /> Command Center
+          </Link>
+          <Link href="/members" className="text-text-secondary hover:text-brand-primary transition-colors text-sm font-medium">
+            Members Directory
+          </Link>
+        </nav>
       </header>
 
       <main className="flex-1 flex items-center justify-center">

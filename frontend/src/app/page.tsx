@@ -29,56 +29,60 @@ export default function Home() {
   const [decisions, setDecisions] = useState<Decision[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [locRes, decRes] = await Promise.all([
-          fetch("http://localhost:8000/locations"),
-          fetch("http://localhost:8000/decisions/feed"),
+          fetch(`${API_URL}/locations`),
+          fetch(`${API_URL}/decisions/feed`),
           new Promise(resolve => setTimeout(resolve, 400))
         ]);
         const locData = await locRes.json();
         const decData = await decRes.json();
-        setLocations(locData);
-        setDecisions(decData);
+        setLocations(Array.isArray(locData) ? locData : []);
+        setDecisions(Array.isArray(decData) ? decData : []);
       } catch (err) {
         console.error("Error fetching data", err);
+        setLocations([]);
+        setDecisions([]);
       } finally {
         setLoading(false);
       }
     };
     fetchData();
-  }, []);
+  }, [API_URL]);
 
   return (
-    <div className="min-h-screen p-4 md:p-10 max-w-[1440px] mx-auto">
-      <header className="mb-12 md:mb-16 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+    <div className="min-h-screen px-6 py-8 md:px-12 md:py-16 max-w-7xl mx-auto flex flex-col gap-12">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-surface-border pb-8">
         <div>
-          <div className="flex items-center gap-2 mb-2 text-sm font-semibold text-brand-primary">
+          <div className="flex items-center gap-2 mb-3 text-sm font-semibold text-brand-primary uppercase tracking-widest">
             NeuroDesk 
             <span className="flex h-2 w-2 relative">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-success opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-success"></span>
             </span>
-            <span className="text-brand-success uppercase tracking-widest text-[10px]">Live</span>
+            <span className="text-brand-success text-[10px]">Live System</span>
           </div>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tighter leading-[1.05] mb-3">
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight mb-2 text-text-primary">
             Command Center
           </h1>
-          <p className="text-text-secondary text-base">Real-time overview of operations.</p>
+          <p className="text-text-secondary text-base md:text-lg">Real-time overview of operations and intelligence.</p>
         </div>
-        <div className="flex flex-col items-start sm:items-end gap-2 text-sm">
+        <div className="flex flex-col items-start md:items-end gap-3 text-sm w-full md:w-auto">
           <span className="text-text-secondary font-medium">
             {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
           </span>
-          <div className="flex items-center gap-4">
-            <Link href="/members" className="text-brand-primary hover:text-white transition-colors font-medium">
-              Members
+          <nav className="flex items-center gap-6 w-full md:w-auto justify-start md:justify-end">
+            <Link href="/members" className="text-text-secondary hover:text-brand-primary transition-colors font-medium">
+              Members Directory
             </Link>
-            <Link href="/input" className="text-brand-primary hover:text-white transition-colors font-medium">
+            <Link href="/input" className="text-text-secondary hover:text-brand-primary transition-colors font-medium">
               Daily Input &rarr;
             </Link>
-          </div>
+          </nav>
         </div>
       </header>
 
@@ -215,14 +219,15 @@ function DecisionCard({ dec }: { dec: Decision }) {
 
   const handleApprove = async () => {
     setActionState("loading");
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
     try {
-      const res = await fetch(`http://localhost:8000/decisions/${dec.id}/approve`, {
+      const res = await fetch(`${API_URL}/decisions/${dec.id}/approve`, {
         method: "POST",
       });
       const data = await res.json();
-      const auditRes = await fetch("http://localhost:8000/audit-log");
+      const auditRes = await fetch(`${API_URL}/audit-log`);
       const auditData = await auditRes.json();
-      const myLog = auditData.reverse().find((a: any) => a.action === "decision_approved");
+      const myLog = Array.isArray(auditData) ? auditData.reverse().find((a: any) => a.action === "decision_approved") : null;
       
       setActionState("success");
       if (myLog) {
@@ -237,16 +242,16 @@ function DecisionCard({ dec }: { dec: Decision }) {
   };
 
   const cardVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" as const } }
+    hidden: { opacity: 0, y: 15 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } }
   };
 
   return (
     <motion.div 
       variants={cardVariants}
-      whileHover={{ scale: 1.01, boxShadow: "0px 10px 30px rgba(0,0,0,0.2)" }}
+      whileHover={{ y: -2 }}
       transition={{ duration: 0.2 }}
-      className={`glass-card border-l-[6px] ${typeStyles[dec.type]} overflow-hidden ${dec.type === 'critical' ? 'bg-red-500/5 shadow-[0_0_15px_rgba(239,68,68,0.1)]' : ''}`}
+      className={`glass-card border-l-[4px] ${typeStyles[dec.type]} overflow-hidden ${dec.type === 'critical' ? 'bg-red-500/5 shadow-[0_0_20px_rgba(239,68,68,0.05)]' : ''}`}
     >
       <div className="p-5 md:p-6">
         <span className={`text-[11px] font-bold tracking-widest uppercase ${
