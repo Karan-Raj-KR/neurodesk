@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { Check, Loader2, Info } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 
 type Location = {
   id: string;
@@ -13,7 +15,7 @@ type Location = {
 
 type Decision = {
   id: string;
-  type: "critical" | "warning" | "opportunity";
+  type: "critical" | "warning" | "opportunity" | "insight";
   headline: string;
   evidence: string;
   confidence_pct: number;
@@ -49,11 +51,29 @@ export default function Home() {
 
   return (
     <div className="min-h-screen p-4 md:p-10 max-w-[1440px] mx-auto">
-      <header className="mb-12 md:mb-16">
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tighter leading-[1.05] mb-3">
-          Command Center
-        </h1>
-        <p className="text-text-secondary text-base">Real-time overview of NeuroDesk operations.</p>
+      <header className="mb-12 md:mb-16 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+        <div>
+          <div className="flex items-center gap-2 mb-2 text-sm font-semibold text-brand-primary">
+            NeuroDesk 
+            <span className="flex h-2 w-2 relative">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-success opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-success"></span>
+            </span>
+            <span className="text-brand-success uppercase tracking-widest text-[10px]">Live</span>
+          </div>
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tighter leading-[1.05] mb-3">
+            Command Center
+          </h1>
+          <p className="text-text-secondary text-base">Real-time overview of operations.</p>
+        </div>
+        <div className="flex flex-col items-start sm:items-end gap-2 text-sm">
+          <span className="text-text-secondary font-medium">
+            {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+          </span>
+          <Link href="/input" className="text-brand-primary hover:text-white transition-colors font-medium">
+            Daily Input &rarr;
+          </Link>
+        </div>
       </header>
 
       {loading ? (
@@ -73,11 +93,22 @@ export default function Home() {
 
           <section>
             <h2 className="text-2xl font-bold mb-6 tracking-tight">AI Decision Feed</h2>
-            <div className="space-y-5">
+            <motion.div 
+              className="space-y-5"
+              initial="hidden"
+              animate="visible"
+              variants={{
+                hidden: { opacity: 0 },
+                visible: {
+                  opacity: 1,
+                  transition: { staggerChildren: 0.1 }
+                }
+              }}
+            >
               {decisions.map((dec) => (
                 <DecisionCard key={dec.id} dec={dec} />
               ))}
-            </div>
+            </motion.div>
           </section>
         </div>
       )}
@@ -93,14 +124,14 @@ function LocationCard({ loc }: { loc: Location }) {
   };
 
   return (
-    <div className="glass-card p-5 flex flex-col justify-between h-36">
-      <div className="flex justify-between items-start mb-4">
+    <div className="glass-card p-5 md:p-6 flex flex-col justify-between h-auto min-h-[144px]">
+      <div className="flex justify-between items-start mb-6">
         <span className="font-semibold tracking-tight">{loc.name}</span>
         <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full ${statusColors[loc.status]}`}>
           {loc.status}
         </span>
       </div>
-      <div className="pt-3 border-t border-surface-border space-y-2.5">
+      <div className="pt-4 border-t border-surface-border space-y-3">
         <div className="flex justify-between items-center text-sm">
           <span className="text-text-secondary">Members</span>
           <span className="font-mono font-bold text-text-primary">{loc.members.toLocaleString()}</span>
@@ -123,12 +154,14 @@ function DecisionCard({ dec }: { dec: Decision }) {
     critical: "border-l-brand-danger",
     warning: "border-l-brand-warning",
     opportunity: "border-l-brand-success",
+    insight: "border-l-brand-success",
   };
 
   const typeLabels = {
     critical: "CRITICAL",
     warning: "WARNING",
     opportunity: "OPPORTUNITY",
+    insight: "INSIGHT",
   };
 
   const handleApprove = async () => {
@@ -138,8 +171,6 @@ function DecisionCard({ dec }: { dec: Decision }) {
         method: "POST",
       });
       const data = await res.json();
-      // Normally we'd fetch audit log or have it returned in the response
-      // We hardcoded the mock recipients in the backend, but we can just pretend here or fetch it.
       const auditRes = await fetch("http://localhost:8000/audit-log");
       const auditData = await auditRes.json();
       const myLog = auditData.reverse().find((a: any) => a.action === "decision_approved");
@@ -156,9 +187,19 @@ function DecisionCard({ dec }: { dec: Decision }) {
     }
   };
 
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }
+  };
+
   return (
-    <div className={`glass-card border-l-[6px] ${typeStyles[dec.type]} overflow-hidden ${dec.type === 'critical' ? 'bg-red-500/5 shadow-[0_0_15px_rgba(239,68,68,0.1)]' : ''}`}>
-      <div className={`p-5 md:p-6 ${dec.type === 'critical' ? 'md:p-7' : ''}`}>
+    <motion.div 
+      variants={cardVariants}
+      whileHover={{ scale: 1.01, boxShadow: "0px 10px 30px rgba(0,0,0,0.2)" }}
+      transition={{ duration: 0.2 }}
+      className={`glass-card border-l-[6px] ${typeStyles[dec.type]} overflow-hidden ${dec.type === 'critical' ? 'bg-red-500/5 shadow-[0_0_15px_rgba(239,68,68,0.1)]' : ''}`}
+    >
+      <div className="p-5 md:p-6">
         <span className={`text-[11px] font-bold tracking-widest uppercase ${
           dec.type === 'critical' ? 'text-brand-danger' :
           dec.type === 'warning' ? 'text-brand-warning' : 'text-brand-success'
@@ -183,28 +224,62 @@ function DecisionCard({ dec }: { dec: Decision }) {
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3">
-          {actionState === "idle" && (
-            <button onClick={handleApprove} className="btn-primary flex-1 sm:flex-none">
-              Approve Action
-            </button>
-          )}
-          {actionState === "loading" && (
-            <button disabled className="btn-primary opacity-80 cursor-wait flex items-center justify-center gap-2 flex-1 sm:flex-none">
-              <Loader2 className="w-4 h-4 animate-spin" />
-              Sending via WhatsApp...
-            </button>
-          )}
-          {actionState === "success" && (
-            <div className="bg-brand-success/10 border border-brand-success/30 text-brand-success rounded-full px-6 py-2.5 flex items-center justify-center gap-2 font-semibold flex-1 sm:flex-none">
-              <Check className="w-4 h-4" />
-              Action Approved
-            </div>
-          )}
+        <div className="flex flex-col sm:flex-row gap-3 h-auto sm:h-11">
+          <AnimatePresence mode="wait">
+            {dec.type !== 'insight' && actionState === "idle" && (
+              <motion.button 
+                key="idle"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                onClick={handleApprove} 
+                className="btn-primary flex-1 sm:flex-none h-11"
+              >
+                Approve Action
+              </motion.button>
+            )}
+            {dec.type === 'insight' && (
+              <motion.button 
+                key="insight"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="btn-secondary rounded-full flex-1 sm:flex-none cursor-default h-11"
+              >
+                Use This Insight
+              </motion.button>
+            )}
+            {actionState === "loading" && (
+              <motion.button 
+                key="loading"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                disabled 
+                className="btn-primary opacity-80 cursor-wait flex items-center justify-center gap-2 flex-1 sm:flex-none h-11"
+              >
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Sending...
+              </motion.button>
+            )}
+            {actionState === "success" && (
+              <motion.div 
+                key="success"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.2 }}
+                className="bg-brand-success/10 border border-brand-success/30 text-brand-success rounded-full px-6 py-2.5 flex items-center justify-center gap-2 font-semibold flex-1 sm:flex-none h-11"
+              >
+                <Check className="w-4 h-4" />
+                Approved
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <button
             onClick={() => setExpanded(!expanded)}
-            className="btn-secondary flex items-center justify-center gap-2 flex-1 sm:flex-none"
+            className="btn-secondary flex items-center justify-center gap-2 flex-1 sm:flex-none h-11"
           >
             <Info className="w-4 h-4" />
             {expanded ? "Hide Details" : "Explain More"}
@@ -212,28 +287,38 @@ function DecisionCard({ dec }: { dec: Decision }) {
         </div>
       </div>
 
-      {expanded && (
-        <div className="border-t border-surface-border bg-surface-base/50 p-5 md:p-6 text-sm">
-          <div className="mb-4">
-            <h4 className="text-xs font-bold text-text-secondary uppercase tracking-wider mb-2">Evidence & Reasoning</h4>
-            <p className="leading-relaxed text-text-primary/90">{dec.evidence}</p>
-          </div>
-
-          {actionState === "success" && auditInfo && (
-            <div className="mt-6 p-4 rounded-xl bg-surface-base border border-surface-border">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-bold text-brand-success uppercase tracking-wider flex items-center gap-1">
-                  <Check className="w-3 h-3" /> Message Sent Successfully
-                </span>
-                <span className="text-xs text-text-secondary font-mono">To {auditInfo.recipient_count} recipient(s)</span>
+      <AnimatePresence>
+        {expanded && (
+          <motion.div 
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="border-t border-surface-border bg-surface-base/50 text-sm overflow-hidden"
+          >
+            <div className="p-5 md:p-6">
+              <div className="mb-4">
+                <h4 className="text-xs font-bold text-text-secondary uppercase tracking-wider mb-2">Evidence & Reasoning</h4>
+                <p className="leading-relaxed text-text-primary/90">{dec.evidence}</p>
               </div>
-              <p className="italic text-text-secondary border-l-2 border-surface-border pl-3 py-1">
-                "{dec.sample_whatsapp_message}"
-              </p>
+
+              {actionState === "success" && auditInfo && (
+                <div className="mt-6 p-4 rounded-xl bg-surface-base border border-surface-border">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-bold text-brand-success uppercase tracking-wider flex items-center gap-1">
+                      <Check className="w-3 h-3" /> Message Sent Successfully
+                    </span>
+                    <span className="text-xs text-text-secondary font-mono">To {auditInfo.recipient_count} recipient(s)</span>
+                  </div>
+                  <p className="italic text-text-secondary border-l-2 border-surface-border pl-3 py-1">
+                    "{dec.sample_whatsapp_message}"
+                  </p>
+                </div>
+              )}
             </div>
-          )}
-        </div>
-      )}
-    </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }

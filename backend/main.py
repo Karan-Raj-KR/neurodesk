@@ -39,6 +39,13 @@ data_store: Dict[str, Any] = {
     "static_decisions": []
 }
 audit_log: List[Dict[str, Any]] = []
+daily_inputs: List[Dict[str, Any]] = []
+
+class DailyInputData(BaseModel):
+    location: str
+    attendance: int
+    revenue: int
+    flag: str = ""
 
 def load_seed_data():
     try:
@@ -179,3 +186,33 @@ async def approve_decision(decision_id: str):
 @app.get("/audit-log")
 def get_audit_log():
     return audit_log
+
+@app.get("/growth-suggestions")
+def get_growth_suggestions():
+    return [
+        {
+            "title": "Referral Incentive for Champions Segment",
+            "description": "42 high-engagement members haven't referred anyone yet. A ₹500 credit per successful referral could bring in 15-20 new members this quarter based on their network size.",
+            "potential_impact": "12-15 new members/month"
+        },
+        {
+            "title": "Off-Peak Revenue: 11am-3pm Slot",
+            "description": "Koramangala and JP Nagar run at 30% capacity during midday. A discounted off-peak membership tier could fill unused capacity without affecting peak-hour experience.",
+            "potential_impact": "₹18,000/month incremental revenue"
+        },
+        {
+            "title": "Corporate Tie-Up Opportunity",
+            "description": "3 IT companies within 2km of Whitefield have no existing corporate wellness partnership. Corporate batches show higher retention when actively managed (as seen with the Infosys batch pattern).",
+            "potential_impact": "₹2.4L annual contract value"
+        }
+    ]
+
+@app.post("/daily-input")
+async def receive_daily_input(data: DailyInputData):
+    # Simulate a brief delay
+    await asyncio.sleep(0.5)
+    daily_inputs.append({
+        **data.dict(),
+        "timestamp": datetime.now().isoformat()
+    })
+    return {"status": "success", "message": "Daily input recorded successfully"}

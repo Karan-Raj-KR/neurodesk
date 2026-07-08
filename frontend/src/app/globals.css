@@ -9,7 +9,7 @@
   --color-surface-border: #1F1F2E;
   --color-surface-input: #0A0A0F;
   --color-text-primary: #E5E1E6;
-  --color-text-secondary: #918FA1;
+  --color-text-secondary: #A9A7BA;
   --font-inter: "Inter", sans-serif;
 }
 
@@ -57,4 +57,32 @@ body {
 
 .btn-secondary:hover {
   background-color: rgba(255, 255, 255, 0.04);
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-surface-border) 25%,
+    rgba(255, 255, 255, 0.06) 50%,
+    var(--color-surface-border) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-pulse 1.2s ease-in-out infinite;
+  border-radius: 4px;
+}
+
+.skeleton-card {
+  background-color: rgba(18, 18, 26, 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--color-surface-border);
+  border-radius: 16px;
 }
