@@ -243,7 +243,7 @@ function MemberRow({ member, onUpdate }: { member: Member, onUpdate: () => void 
           <div className="flex items-center">
             {atRisk ? (
               <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full text-brand-danger bg-brand-danger/10 border border-brand-danger/20">
-                At-Risk (>14d)
+                At-Risk (&gt;14d)
               </span>
             ) : (
               <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full text-brand-success bg-brand-success/10 border border-brand-success/20">
