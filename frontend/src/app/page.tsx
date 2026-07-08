@@ -35,6 +35,7 @@ export default function Home() {
         const [locRes, decRes] = await Promise.all([
           fetch("http://localhost:8000/locations"),
           fetch("http://localhost:8000/decisions/feed"),
+          new Promise(resolve => setTimeout(resolve, 400))
         ]);
         const locData = await locRes.json();
         const decData = await decRes.json();
@@ -70,15 +71,63 @@ export default function Home() {
           <span className="text-text-secondary font-medium">
             {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
           </span>
-          <Link href="/input" className="text-brand-primary hover:text-white transition-colors font-medium">
-            Daily Input &rarr;
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link href="/members" className="text-brand-primary hover:text-white transition-colors font-medium">
+              Members
+            </Link>
+            <Link href="/input" className="text-brand-primary hover:text-white transition-colors font-medium">
+              Daily Input &rarr;
+            </Link>
+          </div>
         </div>
       </header>
 
       {loading ? (
-        <div className="flex items-center justify-center h-64">
-          <Loader2 className="animate-spin text-brand-primary w-8 h-8" />
+        <div className="space-y-16 md:space-y-20">
+          <section>
+            <h2 className="text-2xl font-bold mb-6 tracking-tight">Location Overview</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              {[1, 2, 3, 4].map(i => (
+                <div key={i} className="glass-card p-5 md:p-6 flex flex-col justify-between h-auto min-h-[144px] animate-pulse">
+                   <div className="flex justify-between items-start mb-6">
+                     <div className="w-24 h-5 bg-surface-border rounded"></div>
+                     <div className="w-12 h-4 bg-surface-border rounded-full"></div>
+                   </div>
+                   <div className="pt-4 border-t border-surface-border space-y-3">
+                     <div className="flex justify-between">
+                        <div className="w-16 h-4 bg-surface-border rounded"></div>
+                        <div className="w-10 h-4 bg-surface-border rounded"></div>
+                     </div>
+                     <div className="flex justify-between">
+                        <div className="w-24 h-4 bg-surface-border rounded"></div>
+                        <div className="w-16 h-4 bg-surface-border rounded"></div>
+                     </div>
+                   </div>
+                </div>
+              ))}
+            </div>
+          </section>
+          <section>
+            <h2 className="text-2xl font-bold mb-6 tracking-tight">AI Decision Feed</h2>
+            <div className="space-y-5">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="glass-card border-l-[6px] border-surface-border p-5 md:p-6 animate-pulse">
+                   <div className="w-20 h-3 bg-surface-border rounded mb-3"></div>
+                   <div className="w-3/4 h-6 bg-surface-border rounded mb-4"></div>
+                   <div className="w-full h-4 bg-surface-border rounded mb-2"></div>
+                   <div className="w-5/6 h-4 bg-surface-border rounded mb-6"></div>
+                   <div className="flex items-center gap-8 pt-4 mb-6 border-t border-surface-border">
+                     <div className="flex flex-col gap-1.5"><div className="w-16 h-2 bg-surface-border rounded"></div><div className="w-10 h-4 bg-surface-border rounded"></div></div>
+                     <div className="flex flex-col gap-1.5"><div className="w-20 h-2 bg-surface-border rounded"></div><div className="w-16 h-4 bg-surface-border rounded"></div></div>
+                   </div>
+                   <div className="flex flex-col sm:flex-row gap-3 h-auto sm:h-11">
+                     <div className="w-full sm:w-32 h-11 bg-surface-border rounded-full"></div>
+                     <div className="w-full sm:w-32 h-11 bg-surface-border rounded-full"></div>
+                   </div>
+                </div>
+              ))}
+            </div>
+          </section>
         </div>
       ) : (
         <div className="space-y-16 md:space-y-20">

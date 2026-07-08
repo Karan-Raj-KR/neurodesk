@@ -47,6 +47,116 @@ class DailyInputData(BaseModel):
     revenue: int
     flag: str = ""
 
+class MemberCreate(BaseModel):
+    name: str
+    location: str
+    membership_tier: str
+    trainer_assigned: str
+    last_session_rating: int = 0
+    
+class MemberUpdate(BaseModel):
+    attendance_count: int
+    last_visit_date: str
+    notes: str
+    last_session_rating: int
+
+import uuid
+from datetime import datetime, timedelta
+
+def get_past_date(days_ago):
+    return (datetime.now() - timedelta(days=days_ago)).strftime("%Y-%m-%d")
+
+members_list: List[Dict[str, Any]] = [
+    {
+        "id": str(uuid.uuid4()),
+        "name": "Rohit Sharma",
+        "location": "Whitefield",
+        "join_date": "2025-03-10",
+        "membership_tier": "Pro",
+        "trainer_assigned": "Coach Anand",
+        "attendance_count": 45,
+        "last_visit_date": get_past_date(16),
+        "notes": "Infosys corporate batch. Missed last 2 weeks."
+    },
+    {
+        "id": str(uuid.uuid4()),
+        "name": "Priya Patel",
+        "location": "Whitefield",
+        "join_date": "2025-03-15",
+        "membership_tier": "Elite",
+        "trainer_assigned": "Coach Anand",
+        "attendance_count": 42,
+        "last_visit_date": get_past_date(18),
+        "notes": "Infosys corporate batch. Reaching out via WhatsApp."
+    },
+    {
+        "id": str(uuid.uuid4()),
+        "name": "Amit Kumar",
+        "location": "Koramangala",
+        "join_date": "2025-01-20",
+        "membership_tier": "Basic",
+        "trainer_assigned": "Coach Ravi",
+        "attendance_count": 89,
+        "last_visit_date": get_past_date(2),
+        "notes": "Regular attendee."
+    },
+    {
+        "id": str(uuid.uuid4()),
+        "name": "Neha Gupta",
+        "location": "HSR Layout",
+        "join_date": "2024-11-05",
+        "membership_tier": "Pro",
+        "trainer_assigned": "Coach Priya",
+        "attendance_count": 120,
+        "last_visit_date": get_past_date(4),
+        "notes": "Interested in PT upsell."
+    },
+    {
+        "id": str(uuid.uuid4()),
+        "name": "Vikram Singh",
+        "location": "JP Nagar",
+        "join_date": "2025-05-01",
+        "membership_tier": "Elite",
+        "trainer_assigned": "Coach Ravi",
+        "attendance_count": 12,
+        "last_visit_date": get_past_date(20),
+        "notes": "Needs motivation."
+    },
+    {
+        "id": str(uuid.uuid4()),
+        "name": "Sneha Reddy",
+        "location": "Whitefield",
+        "join_date": "2025-03-12",
+        "membership_tier": "Pro",
+        "trainer_assigned": "Coach Anand",
+        "attendance_count": 40,
+        "last_visit_date": get_past_date(1),
+        "notes": "Infosys batch, still active."
+    },
+    {
+        "id": str(uuid.uuid4()),
+        "name": "Rahul Verma",
+        "location": "Koramangala",
+        "join_date": "2025-06-15",
+        "membership_tier": "Basic",
+        "trainer_assigned": "Unassigned",
+        "attendance_count": 5,
+        "last_visit_date": get_past_date(15),
+        "notes": "New member, at risk."
+    },
+    {
+        "id": str(uuid.uuid4()),
+        "name": "Anjali Desai",
+        "location": "HSR Layout",
+        "join_date": "2025-02-28",
+        "membership_tier": "Elite",
+        "trainer_assigned": "Coach Priya",
+        "attendance_count": 65,
+        "last_visit_date": get_past_date(3),
+        "notes": "Preparing for marathon."
+    }
+]
+
 def load_seed_data():
     try:
         with open("seed_data.json", "r") as f:
@@ -216,3 +326,36 @@ async def receive_daily_input(data: DailyInputData):
         "timestamp": datetime.now().isoformat()
     })
     return {"status": "success", "message": "Daily input recorded successfully"}
+
+@app.get("/members")
+def get_members():
+    return members_list
+
+@app.post("/members")
+async def create_member(member: MemberCreate):
+    new_member = {
+        "id": str(uuid.uuid4()),
+        "name": member.name,
+        "location": member.location,
+        "join_date": datetime.now().strftime("%Y-%m-%d"),
+        "membership_tier": member.membership_tier,
+        "trainer_assigned": member.trainer_assigned,
+        "attendance_count": 0,
+        "last_visit_date": datetime.now().strftime("%Y-%m-%d"),
+        "notes": "",
+        "last_session_rating": member.last_session_rating
+    }
+    members_list.append(new_member)
+    return new_member
+
+@app.put("/members/{member_id}")
+async def update_member(member_id: str, member_update: MemberUpdate):
+    for m in members_list:
+        if m["id"] == member_id:
+            m["attendance_count"] = member_update.attendance_count
+            m["last_visit_date"] = member_update.last_visit_date
+            m["notes"] = member_update.notes
+            m["last_session_rating"] = member_update.last_session_rating
+            return m
+    from fastapi import HTTPException
+    raise HTTPException(status_code=404, detail="Member not found")

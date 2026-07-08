@@ -45,7 +45,10 @@ export default function DailyInputPage() {
     <div className="min-h-screen p-4 md:p-10 max-w-[1440px] mx-auto flex flex-col">
       <header className="mb-12 flex justify-between items-center">
         <Link href="/" className="text-text-secondary hover:text-text-primary transition-colors flex items-center gap-2 text-sm font-medium">
-          <ArrowLeft className="w-4 h-4" /> Back to Command Center
+          <ArrowLeft className="w-4 h-4" /> Command Center
+        </Link>
+        <Link href="/members" className="text-text-secondary hover:text-text-primary transition-colors flex items-center gap-2 text-sm font-medium">
+          Members Directory
         </Link>
         <div className="flex items-center gap-2 text-sm font-semibold text-brand-primary">
           NeuroDesk 
