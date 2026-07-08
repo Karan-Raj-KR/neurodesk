@@ -1,0 +1,10 @@
+{
+  "id": "decision-1",
+  "type": "critical",
+  "headline": "Whitefield — 23 members showing churn signals",
+  "evidence": "These 23 members joined as a corporate batch from Infosys in March. Attendance dropped sharply after November 15th, when their project sprint cycle ended. Corporate batch members who miss 2+ consecutive weeks before renewal historically churn at 71%.",
+  "confidence_pct": 87,
+  "revenue_at_risk_inr": 184000,
+  "recommended_action": "Send personalized trainer check-in messages to all 23 members before the 6-week renewal window closes.",
+  "sample_whatsapp_message": "Hi Rohit, Coach Anand here from PowerHouse Whitefield. We've missed you this week! I know project season gets intense. We've kept your usual 7 AM slot open — come in Thursday and I'll put together a quick program to help you reset. Just reply YES and it's booked."
+}

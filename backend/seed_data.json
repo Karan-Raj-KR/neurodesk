@@ -1,0 +1,64 @@
+{
+  "locations": [
+    {
+      "id": "loc-1",
+      "name": "Koramangala",
+      "members": 1240,
+      "revenue_today_inr": 45000,
+      "status": "green"
+    },
+    {
+      "id": "loc-2",
+      "name": "HSR Layout",
+      "members": 890,
+      "revenue_today_inr": 32000,
+      "status": "amber"
+    },
+    {
+      "id": "loc-3",
+      "name": "Whitefield",
+      "members": 1560,
+      "revenue_today_inr": 8500,
+      "status": "red"
+    },
+    {
+      "id": "loc-4",
+      "name": "JP Nagar",
+      "members": 720,
+      "revenue_today_inr": 21000,
+      "status": "amber"
+    }
+  ],
+  "static_decisions": [
+    {
+      "id": "decision-2",
+      "type": "warning",
+      "headline": "Equipment Maintenance Overdue at HSR Layout",
+      "evidence": "3 treadmills reported faulty in the last 48 hours. Maintenance contract SLA breached by 12 hours.",
+      "confidence_pct": 95,
+      "revenue_at_risk_inr": 0,
+      "recommended_action": "Escalate to Facility Manager immediately and offer members 1-day guest passes to nearby branches.",
+      "sample_whatsapp_message": "Hi Facility Team, HSR Layout treadmills are down. SLA breached. Need immediate dispatch."
+    },
+    {
+      "id": "decision-3",
+      "type": "opportunity",
+      "headline": "Upsell Opportunity for Personal Training at JP Nagar",
+      "evidence": "15 members recently hit their 100th check-in milestone but haven't purchased PT packages.",
+      "confidence_pct": 85,
+      "revenue_at_risk_inr": 75000,
+      "recommended_action": "Send automated WhatsApp message offering 15% off first PT package to these members.",
+      "sample_whatsapp_message": "Congrats on 100 workouts! Celebrate with 15% off your first Personal Training package at JP Nagar."
+    },
+    {
+      "id": "decision-4",
+      "type": "insight",
+      "headline": "Mutton biryani members show 2.3x higher retention",
+      "evidence": "Members who regularly order mutton biryani at post-workout meal add-ons show significantly higher 90-day retention than average.",
+      "confidence_pct": 92,
+      "revenue_at_risk_inr": 0,
+      "recommended_action": "Feature mutton biryani in this week's WhatsApp status update to at-risk segments.",
+      "sample_whatsapp_message": ""
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-primary: #6C63FF;
+  --color-brand-success: #00E699;
+  --color-brand-danger: #FF4D4D;
+  --color-brand-warning: #FFB785;
+  --color-surface-base: #12121A;
+  --color-surface-border: #1F1F2E;
+  --color-surface-input: #0A0A0F;
+  --color-text-primary: #E5E1E6;
+  --color-text-secondary: #918FA1;
+  --font-inter: "Inter", sans-serif;
+}
+
+:root {
+  --background: #08080B;
+  --foreground: #E5E1E6;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-inter);
+}
+
+.glass-card {
+  background-color: rgba(18, 18, 26, 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--color-surface-border);
+  border-radius: 16px;
+}
+
+.btn-primary {
+  background-color: var(--color-brand-primary);
+  color: white;
+  border-radius: 9999px;
+  padding: 10px 22px;
+  font-weight: 600;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+
+.btn-primary:hover {
+  background-color: #5a52d6;
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-surface-border);
+  border-radius: 9999px;
+  padding: 10px 22px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.04);
+}
